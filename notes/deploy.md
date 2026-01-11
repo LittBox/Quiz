@@ -26,8 +26,9 @@ npm run build
 2. 服务器环境配置（用宝塔面板可视化操作）
 登录腾讯云服务器控制台，通过「WebShell」登录服务器；
 安装宝塔面板（可视化管理服务器）：
-bash
+```bash
 wget -O install.sh http://download.bt.cn/install/install_6.0.sh && bash install.sh
+```
 安装完成后，记录宝塔的登录地址（如http://服务器IP:8888）、账号密码；
 登录宝塔面板，一键安装「LNMP 套件」（包含 Nginx/MySQL/Node.js）。
 3. 部署后端代码

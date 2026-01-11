@@ -2,7 +2,7 @@ spring:
   datasource:
     # MySQL 连接地址（数据库名 quizdb，关闭 SSL，时区 UTC）
     url: jdbc:mysql://localhost:3306/quizdb?useSSL=false&serverTimezone=UTC
-    username: root  # 数据库用户名
+    username: quizdb_user  # 数据库用户名
     password: 654321  # 数据库密码
   jpa:
     hibernate:
