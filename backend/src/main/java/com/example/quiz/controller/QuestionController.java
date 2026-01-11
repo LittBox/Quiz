@@ -154,9 +154,9 @@ public class QuestionController {
     @GetMapping("/ids")
     public ResponseEntity<List<Long>> getAllQuestionIds() {
         List<Question> questions = questionRepository.findAll();
-        List<Long> ids = questions.stream()
-                .map(Question::getId)
-                .collect(Collectors.toList());
+        List<Long> ids = questions.stream() //开启流
+                .map(Question::getId)  //等价.map( question -> question.getId() )
+                .collect(Collectors.toList()); //收集结果，终止流（收尾操作） Collectors.toList() ：JDK 提供的收集器，作用是「把流中的元素收集到一个 ArrayList 集合中」
         return ResponseEntity.ok(ids);
     }
 

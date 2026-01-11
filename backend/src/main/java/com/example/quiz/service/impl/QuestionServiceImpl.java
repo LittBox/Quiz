@@ -145,13 +145,7 @@ public class QuestionServiceImpl implements QuestionService {
         if (question.getOptionE() != null) {
             existingQuestion.setOptionE(question.getOptionE());
         }
-        if (question.getExplanation() != null) {
-            existingQuestion.setExplanation(question.getExplanation());
-        }
-        if (question.getSeqOrder() != null) {
-            existingQuestion.setSeqOrder(question.getSeqOrder());
-        }
-        
+      
         return questionRepository.save(existingQuestion);
     }
     
@@ -207,8 +201,7 @@ public class QuestionServiceImpl implements QuestionService {
                 (question.getOptionA() != null && question.getOptionA().toLowerCase().contains(searchTerm)) ||
                 (question.getOptionB() != null && question.getOptionB().toLowerCase().contains(searchTerm)) ||
                 (question.getOptionC() != null && question.getOptionC().toLowerCase().contains(searchTerm)) ||
-                (question.getOptionD() != null && question.getOptionD().toLowerCase().contains(searchTerm)) ||
-                (question.getExplanation() != null && question.getExplanation().toLowerCase().contains(searchTerm))) {
+                (question.getOptionD() != null && question.getOptionD().toLowerCase().contains(searchTerm)) ) {
                 result.add(question);
             }
         }
@@ -261,7 +254,7 @@ public class QuestionServiceImpl implements QuestionService {
         while (matcher.find()) {
             try {
                 Question question = new Question();
-                question.setSeqOrder(Integer.parseInt(matcher.group(1).trim()));
+               
                 question.setContent(matcher.group(2).trim());
                 
                 String answer = matcher.group(3).trim();

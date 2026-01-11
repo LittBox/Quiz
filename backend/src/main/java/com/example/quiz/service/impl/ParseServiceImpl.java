@@ -37,8 +37,6 @@ public class ParseServiceImpl implements ParseService {
         List<Question> singleAndMultiQuestions = parseSingleAndMultiQuestions(remainingContent);
         questionList.addAll(singleAndMultiQuestions);
 
-        // 3. 统一设置题目序号（按提取顺序排序）
-        resetQuestionSeqOrder(questionList);
 
         // 批量保存（优化性能，避免循环中频繁调用save）
         questionRepository.saveAll(questionList);
@@ -109,7 +107,7 @@ public class ParseServiceImpl implements ParseService {
                 question.setOptionD(optionD);
                 question.setAnswer(answer);
                 question.setQuestionType("材料分析题"); // 标记题目类型
-                question.setExplanation(""); // 解析留空（可后续手动补充）
+
 
                 materialQuestions.add(question);
             }
@@ -171,7 +169,6 @@ public class ParseServiceImpl implements ParseService {
                     question.setOptionD(optionD);
                     question.setAnswer(answer);
                     question.setQuestionType(currentQuestionType); // 标记题型
-                    question.setExplanation("");
 
                     questions.add(question);
                 }
@@ -190,13 +187,5 @@ public class ParseServiceImpl implements ParseService {
         return content.replaceAll("【材料\\d+】[\\s\\S]+?(?=【材料\\d+】|$)", "");
     }
 
-    /**
-     * 重置题目序号（按提取顺序统一编号，避免材料题与单选/多选题序号混乱）
-     */
-    private void resetQuestionSeqOrder(List<Question> questionList) {
-        int seqOrder = 1;
-        for (Question question : questionList) {
-            question.setSeqOrder(seqOrder++);
-        }
-    }
+ 
 }
