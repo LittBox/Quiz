@@ -297,7 +297,7 @@ export default {
     
     async loadTotalQuestions() {
       try {
-        const res = await axios.get('http://123.207.43.214/api/questions/count')
+        const res = await axios.get('https://123.207.43.214/api/questions/count')
         this.totalQuestions = this.extractCount(res.data)
         console.log('获取到题目总数:', this.totalQuestions)
       } catch (error) {
@@ -317,7 +317,7 @@ export default {
     
     async loadQuestionIds() {
       try {
-        const res = await axios.get('http://123.207.43.214/api/questions/ids')
+        const res = await axios.get('https://123.207.43.214/api/questions/ids')
         if (res.data && Array.isArray(res.data)) {
           this.questionIds = res.data
         }
@@ -335,7 +335,7 @@ export default {
       try {
         const validId = Math.max(1, Math.min(id, this.totalQuestions))
         console.log(`正在加载题目 ID: ${validId}`)
-        const res = await axios.get(`http://123.207.43.214/api/questions/${validId}`)
+        const res = await axios.get(`https://123.207.43.214/api/questions/${validId}`)
         
         if (res.data) {
           this.currentQuestion = res.data
