@@ -10,9 +10,6 @@
         <span class="question-type" :class="questionTypeClass">
           {{ questionTypeText }}
         </span>
-        <span class="question-hint" v-if="isMultiChoice">
-          (请选择 {{ minSelectCount }}-{{ maxSelectCount }} 个答案)
-        </span>
       </div>
       
       <!-- 题目内容 -->
@@ -21,9 +18,6 @@
       <!-- 多选题选择提示 -->
       <div v-if="isMultiChoice && !showAnswer" class="multi-choice-hint">
         <span class="hint-text">多选题：已选择 {{ selectedOptions.length }} 个答案</span>
-        <span v-if="selectedOptions.length < minSelectCount" class="hint-warning">
-          (至少选择 {{ minSelectCount }} 个)
-        </span>
       </div>
       
       <!-- 选项 -->
@@ -190,7 +184,7 @@ export default {
   data() {
     return {
       loading: true,
-      currentQuestion: null,
+      currentQuestion: null,    // 当前题目对象
       selectedOption: null,      // 单选题答案
       selectedOptions: [],       // 多选题答案（数组）
       showAnswer: false,
@@ -220,8 +214,7 @@ export default {
     // 多选题最少选择数量（至少2个）
     minSelectCount() {
       if (!this.isMultiChoice) return 1
-      const answer = this.currentQuestion.answer || ''
-      return Math.max(2, answer.length)
+      return 2
     },
     
     // 多选题最多选择数量
@@ -235,9 +228,8 @@ export default {
       if (this.showAnswer) return false
       
       if (this.isMultiChoice) {
-        // 多选题：至少选2个，不超过选项总数
-        return this.selectedOptions.length >= this.minSelectCount && 
-               this.selectedOptions.length <= this.maxSelectCount
+        // 多选题：至少选2个
+        return this.selectedOptions.length >= this.minSelectCount 
       } else {
         // 单选题：必须选1个
         return this.selectedOption !== null
@@ -374,6 +366,7 @@ export default {
       if (!content) return ''
       return content.replace(/\n/g, '<br>')
     },
+   
     
     selectOption(optionKey) {
       if (this.showAnswer) return
@@ -420,12 +413,6 @@ export default {
         this.isCorrect = this.selectedOption === this.currentQuestion.answer
       }
       
-      // 回答正确自动跳转（多选题不自动跳转，让用户查看分析）
-      if (this.isCorrect && !this.isMultiChoice && this.currentQuestion.id < this.totalQuestions) {
-        setTimeout(() => {
-          this.nextQuestion()
-        }, 2000)
-      }
     },
     
     nextQuestion() {
@@ -439,7 +426,7 @@ export default {
         this.loadQuestion(this.currentQuestion.id - 1)
       }
     },
-    
+    //retry ：动词，英文意思「重试、重新做、再试一次」
     retryQuestion() {
       this.resetAnswer()
     },
@@ -535,431 +522,5 @@ export default {
 </script>
 
 <style scoped>
-.question-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
-}
 
-.question-id {
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
-}
-
-.question-type {
-  padding: 4px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.type-single {
-  background-color: #e3f2fd;
-  color: #1976d2;
-}
-
-.type-multi {
-  background-color: #f3e5f5;
-  color: #7b1fa2;
-}
-
-.question-content {
-  font-size: 16px;
-  line-height: 1.6;
-  margin-bottom: 24px;
-  padding: 16px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  border-left: 4px solid #2196f3;
-}
-
-.options-container {
-  margin: 20px 0;
-}
-
-.option-item {
-  margin-bottom: 12px;
-  padding: 12px 16px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.option-item:hover {
-  border-color: #64b5f6;
-  background-color: #f5f5f5;
-  transform: translateY(-2px);
-}
-
-.option-header {
-  display: flex;
-  align-items: center;
-}
-
-.option-radio {
-  margin-right: 12px;
-  cursor: pointer;
-  transform: scale(1.2);
-}
-
-.option-key {
-  font-weight: bold;
-  margin-right: 8px;
-  min-width: 20px;
-  color: #1976d2;
-}
-
-.option-text {
-  flex: 1;
-  line-height: 1.5;
-}
-
-.correct-option {
-  border-color: #4caf50;
-  background-color: #e8f5e9;
-  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2);
-}
-
-.wrong-option {
-  border-color: #f44336;
-  background-color: #ffebee;
-  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.2);
-}
-
-.selected-option {
-  border-color: #2196f3;
-  background-color: #e3f2fd;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 12px;
-  margin: 24px 0;
-  flex-wrap: wrap;
-}
-
-button {
-  padding: 10px 24px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 100px;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-submit {
-  background-color: #2196f3;
-  color: white;
-  box-shadow: 0 2px 4px rgba(33, 150, 243, 0.3);
-}
-
-.btn-submit:hover:not(:disabled) {
-  background-color: #1976d2;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
-}
-
-.btn-next {
-  background-color: #4caf50;
-  color: white;
-  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
-}
-
-.btn-next:hover:not(:disabled) {
-  background-color: #388e3c;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
-}
-
-.btn-prev {
-  background-color: #ff9800;
-  color: white;
-  box-shadow: 0 2px 4px rgba(255, 152, 0, 0.3);
-}
-
-.btn-prev:hover:not(:disabled) {
-  background-color: #f57c00;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
-}
-
-.btn-retry {
-  background-color: #9c27b0;
-  color: white;
-  box-shadow: 0 2px 4px rgba(156, 39, 176, 0.3);
-}
-
-.btn-retry:hover:not(:disabled) {
-  background-color: #7b1fa2;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(156, 39, 176, 0.3);
-}
-
-.answer-section {
-  margin-top: 24px;
-  padding: 20px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-radius: 8px;
-  border-left: 4px solid #4caf50;
-}
-
-.answer-result {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 16px;
-  padding: 12px 20px;
-  border-radius: 6px;
-  display: inline-block;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.answer-result.correct {
-  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
-  color: white;
-}
-
-.answer-result.wrong {
-  background: linear-gradient(135deg, #f44336 0%, #c62828 100%);
-  color: white;
-}
-
-.correct-answer,
-.user-answer,
-.explanation {
-  margin: 12px 0;
-  line-height: 1.6;
-  padding: 8px 12px;
-  background-color: white;
-  border-radius: 4px;
-}
-
-.question-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 24px;
-  padding: 16px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-}
-
-.nav-btn {
-  padding: 10px 20px;
-  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-  color: white;
-  font-weight: bold;
-  box-shadow: 0 2px 4px rgba(106, 17, 203, 0.3);
-}
-
-.nav-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(106, 17, 203, 0.3);
-}
-
-.nav-info {
-  font-size: 14px;
-  color: #666;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.jump-input {
-  width: 60px;
-  padding: 4px 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  text-align: center;
-  font-weight: bold;
-}
-
-.quick-jump {
-  margin-top: 16px;
-  padding: 12px;
-  background-color: #f0f0f0;
-  border-radius: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-.quick-jump-label {
-  font-size: 14px;
-  color: #666;
-  font-weight: bold;
-}
-
-.quick-jump-btn {
-  padding: 6px 12px;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.quick-jump-btn:hover {
-  background-color: #e3f2fd;
-  border-color: #2196f3;
-}
-
-.quick-jump-btn.active {
-  background-color: #2196f3;
-  color: white;
-  border-color: #2196f3;
-}
-
-@media (max-width: 768px) {
-  .question-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  
-  .action-buttons {
-    flex-direction: column;
-  }
-  
-  button {
-    width: 100%;
-  }
-  
-  .question-nav {
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .quick-jump {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-.question-hint {
-  font-size: 12px;
-  color: #666;
-  margin-left: 10px;
-}
-
-.multi-choice-hint {
-  margin: 12px 0;
-  padding: 10px 16px;
-  background-color: #e8f4fd;
-  border-left: 4px solid #2196f3;
-  border-radius: 4px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.hint-text {
-  font-size: 14px;
-  color: #1976d2;
-  font-weight: bold;
-}
-
-.hint-warning {
-  font-size: 12px;
-  color: #f57c00;
-  font-weight: bold;
-}
-
-/* 多选题答案样式 */
-.multi-answer {
-  font-weight: bold;
-  color: #1976d2;
-  margin-left: 4px;
-}
-
-/* 多选题分析样式 */
-.answer-analysis {
-  margin-top: 20px;
-  padding: 16px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-}
-
-.analysis-title {
-  font-weight: bold;
-  margin-bottom: 12px;
-  color: #333;
-  font-size: 16px;
-}
-
-.analysis-item {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 8px;
-  padding: 8px;
-  border-radius: 4px;
-  background-color: white;
-}
-
-.analysis-option {
-  font-weight: bold;
-  min-width: 20px;
-  margin-right: 8px;
-}
-
-.analysis-text {
-  flex: 1;
-  margin-right: 12px;
-  font-size: 14px;
-}
-
-.analysis-status {
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-weight: bold;
-  white-space: nowrap;
-}
-
-.analysis-status.correct {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-}
-
-.analysis-status.missed {
-  background-color: #fff3e0;
-  color: #f57c00;
-}
-
-.analysis-status.wrong {
-  background-color: #ffebee;
-  color: #c62828;
-}
-
-.analysis-status.neutral {
-  background-color: #f5f5f5;
-  color: #757575;
-}
-
-/* 复选框样式 */
-.option-checkbox {
-  margin-right: 12px;
-  cursor: pointer;
-  transform: scale(1.2);
-}
-
-.option-checkbox:disabled,
-.option-radio:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
 </style>

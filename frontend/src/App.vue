@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import Upload from './components/Upload.vue'
 import Quiz from './components/Quiz.vue'
-export default { components: { Upload, Quiz } }
+export default { components: { Quiz } }
 </script>
