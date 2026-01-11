@@ -50,6 +50,16 @@ IDEA 中执行mvn package，生成target/xxx.jar；
 用户名 / 密码：自定义（如quiz_user/123456）；
 导入本地数据库脚本：
 本地导出 SQL 文件，在宝塔「数据库」→「导入」上传 SQL 文件。
+
+mysqldump: [ERROR] unknown variable 'collation=utf8mb4_general_ci'.
+
+✅ 本地 DataGrip 连接的是 MySQL 8.0 版本，导出的 SQL 里自带了高版本专属的排序规则 utf8mb4_0900_ai_ci；✅ 服务器宝塔的 MySQL 版本是 5.7/5.6 版本，不认识这个高版本规则，直接拒绝导入，同时连带报表不存在（因为建表语句第一步就执行失败了）。
+
+![alt text](img/dbImport.png)
+
+
+
+
 五、第四步：连接前后端 + 配置域名
 1. 后端配置数据库
 修改 SpringBoot 项目的application.yml，将数据库连接改为服务器的 MySQL：
