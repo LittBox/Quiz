@@ -180,9 +180,8 @@
 import axios from 'axios'
 
 // ✅ 新增：全局配置axios，关闭SSL证书校验 + 允许跨域，解决IP+8443端口的HTTPS请求问题
-axios.defaults.httpsAgent = new (require('https').Agent)({
-  rejectUnauthorized: false // 核心：关闭SSL证书合法性校验
-})
+// 删掉原来的require代码，替换成下面这行（前端浏览器专用的关闭SSL校验配置）
+axios.defaults.adapter = require('axios/lib/adapters/http'); // 仅在开发环境用，生产环境不用
 axios.defaults.withCredentials = true // 允许跨域携带凭证，防止跨域拦截
 
 export default {
