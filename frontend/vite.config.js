@@ -1,18 +1,30 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import path from 'path' // 新增，防止路径解析问题
+import path from 'path'
 
-// 这是Vite+Vue+TS的最终完美配置，无任何遗漏
+// 完整版：保留你所有原有配置 + 新增代理解决HTTPS/IP/8443端口请求问题
 export default defineConfig({
-  plugins: [vue()], // 注册vue插件，核心
-  base: './', // 解决部署后样式/图片/路由404，必加
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src') // 别名配置，兼容所有环境
+    plugins: [vue()],
+    base: './',
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, './src')
+        }
+    },
+    build: {
+        target: 'es2015',
+        outDir: 'dist'
+    },
+    // ========== 核心新增：开发环境代理配置 (解决你的请求拦截问题) ==========
+    server: {
+        proxy: {
+            // 匹配所有以 /api 开头的请求，全部转发到你的后端服务器
+            '/api': {
+                target: 'https://123.207.43.214:8443', // 你的后端真实地址（不用改）
+                changeOrigin: true, // 必须开启：解决跨域问题，模拟请求源一致
+                secure: false,      // 必须开启：忽略后端SSL证书不可信的问题 ✔️ 核心解决你的报错
+                rewrite: (path) => path.replace(/^\/api/, '') // 必须配置：把请求里的/api去掉再转发
+            }
+        }
     }
-  },
-  build: {
-    target: 'es2015', // 兼容Netlify的Node环境，必加
-    outDir: 'dist' // 明确打包目录，防止Netlify识别错
-  }
 })

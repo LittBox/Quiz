@@ -179,16 +179,6 @@
 <script>
 import axios from 'axios'
 
-// ✅ 纯前端浏览器兼容：关闭SSL证书校验（无require，无Node.js语法）
-const originalAdapter = axios.defaults.adapter;
-axios.defaults.adapter = async function (config) {
-  // 核心：强制忽略SSL证书错误（仅开发环境用）
-  config.httpsAgent = {
-    rejectUnauthorized: false
-  };
-  return originalAdapter(config);
-};
-axios.defaults.withCredentials = true // 允许跨域携带凭证，防止跨域拦截
 
 export default {
   name: 'QuestionPractice',
@@ -308,7 +298,7 @@ export default {
     
     async loadTotalQuestions() {
       try {
-        const res = await axios.get('https://123.207.43.214:8443/api/questions/count')
+        const res = await axios.get('/api/questions/count')
         this.totalQuestions = this.extractCount(res.data)
         console.log('获取到题目总数:', this.totalQuestions)
       } catch (error) {
@@ -328,7 +318,7 @@ export default {
     
     async loadQuestionIds() {
       try {
-        const res = await axios.get('https://123.207.43.214:8443/api/questions/ids')
+        const res = await axios.get('/api/questions/ids')
         if (res.data && Array.isArray(res.data)) {
           this.questionIds = res.data
         }
@@ -346,7 +336,7 @@ export default {
       try {
         const validId = Math.max(1, Math.min(id, this.totalQuestions))
         console.log(`正在加载题目 ID: ${validId}`)
-        const res = await axios.get(`https://123.207.43.214:8443/api/questions/${validId}`)
+        const res = await axios.get(`/api/questions/${validId}`)
         
         if (res.data) {
           this.currentQuestion = res.data
