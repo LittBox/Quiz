@@ -179,6 +179,12 @@
 <script>
 import axios from 'axios'
 
+// ✅ 新增：全局配置axios，关闭SSL证书校验 + 允许跨域，解决IP+8443端口的HTTPS请求问题
+axios.defaults.httpsAgent = new (require('https').Agent)({
+  rejectUnauthorized: false // 核心：关闭SSL证书合法性校验
+})
+axios.defaults.withCredentials = true // 允许跨域携带凭证，防止跨域拦截
+
 export default {
   name: 'QuestionPractice',
   data() {
